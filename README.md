@@ -51,17 +51,21 @@ async headers() {
   }];
 }
 ```
+### Findings & Fixes view
 
-Findings & Fixes view
 ![StackGuard findings with green remediation code blocks](./screenshots/findings.png)
-Cross-validation
-The same four findings were independently detected on LankaServe, a production MERN marketplace — confirming detection consistency across Express and Next.js stacks.
 
-Third-party validation was also performed against testphp.vulnweb.com (a deliberately vulnerable public target used for security testing), scoring 85/100 with 1 finding.
+### Cross-validation
 
+The same four findings were independently detected on [LankaServe](https://lanka-serve-l5ms.vercel.app), a production MERN marketplace — confirming detection consistency across Express and Next.js stacks.
 
-🏗️ Architecture
+Third-party validation was also performed against [testphp.vulnweb.com](http://testphp.vulnweb.com) (a deliberately vulnerable public target used for security testing), scoring **85/100 with 1 finding**.
 
+---
+
+## 🏗️ Architecture
+
+```text
 ┌─────────────────┐      POST /api/scan      ┌──────────────────────┐
 │                 │ ──────────────────────► │                      │
 │  React Frontend │                         │  Express API         │
@@ -77,6 +81,7 @@ Third-party validation was also performed against testphp.vulnweb.com (a deliber
                                             │  └────────────────┘  │
                                             └──────────────────────┘
 
+```
 
 Key design decisions:
 
