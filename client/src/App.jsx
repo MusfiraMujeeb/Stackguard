@@ -89,15 +89,23 @@ export default function App() {
                   </div>
                   <p className="text-gray-400 mt-4 text-sm">Evaluated against OWASP guidelines and header best practices.</p>
                 </div>
-                <div className="h-48">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={chartData} dataKey="value" nameKey="name" outerRadius={60} label>
-                        {chartData.map((entry) => <Cell key={entry.name} fill={COLORS[entry.name] || '#ffffff'} />)}
-                      </Pie>
-                      <Tooltip contentStyle={{ backgroundColor: '#111827', borderColor: '#374151' }} />
-                    </PieChart>
-                  </ResponsiveContainer>
+                                <div className="h-48 flex items-center justify-center">
+                  {chartData.length === 0 ? (
+                    <div className="text-center">
+                      <p className="text-4xl mb-2">✅</p>
+                      <p className="text-green-400 font-semibold">No vulnerabilities found</p>
+                      <p className="text-xs text-gray-500 mt-1">All security headers are set</p>
+                    </div>
+                  ) : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie data={chartData} dataKey="value" nameKey="name" outerRadius={60} label>
+                          {chartData.map((entry) => <Cell key={entry.name} fill={COLORS[entry.name] || '#ffffff'} />)}
+                        </Pie>
+                        <Tooltip contentStyle={{ backgroundColor: '#111827', borderColor: '#374151' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  )}
                 </div>
               </div>
 
