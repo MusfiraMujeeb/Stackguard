@@ -4,6 +4,8 @@ require('dotenv').config();
 
 const { checkHeaders, checkTLS } = require('./scanner');
 const FIXES = require('./fixes');
+console.log('FIXES loaded:', Object.keys(FIXES)); // ← add this
+
 
 const app = express();
 app.use(cors());
@@ -18,10 +20,7 @@ app.post('/api/scan', async (req, res) => {
   const headerFindings = await checkHeaders(liveUrl);
   const tlsFindings = await checkTLS(liveUrl);
   
-  const allFindings = [...headerFindings, ...tlsFindings].map(f => ({
-    ...f,
-    fix: FIXES[f.name] || { title: 'General Remediation', code: f.remediation }
-  }));
+  const allFindings = [...headerFindings, ...tlsFindings];
 
   const deduction = allFindings.reduce((acc, f) => {
     if (f.severity === 'Critical') return acc + 25;

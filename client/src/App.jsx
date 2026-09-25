@@ -13,7 +13,7 @@ export default function App() {
 
   const fetchHistory = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/history');
+      const { data } = await axios.get('/api/history');
       setHistory(data);
     } catch (e) {
       console.log('Could not fetch history');
@@ -28,7 +28,7 @@ export default function App() {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data } = await axios.post('http://localhost:5000/api/scan', { liveUrl });
+      const { data } = await axios.post('/api/scan', { liveUrl });
       setScan(data);
       fetchHistory();
     } catch (err) {
