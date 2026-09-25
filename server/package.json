@@ -15,8 +15,6 @@
     "cors": "^2.8.6",
     "dotenv": "^18.0.3",
     "express": "^5.2.1",
-    "helmet": "^8.3.0",
-    "mongoose": "^9.10.2",
-    "simple-git": "^4.0.1"
+    "helmet": "^8.3.0"
   }
 }

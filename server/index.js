@@ -3,8 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const { checkHeaders, checkTLS } = require('./scanner');
-const FIXES = require('./fixes');
-console.log('FIXES loaded:', Object.keys(FIXES)); // ← add this
+
 
 
 const app = express();
