@@ -1,36 +1,112 @@
-# StackGuard — MERN Security Posture Scanner & Fix Advisor
+# 🛡️ StackGuard
 
-> A full-stack security auditing tool that scans web applications for OWASP Top 10 vulnerabilities at both source-code and network levels, providing automated, actionable remediation code snippets.
+**MERN Security Posture Scanner & Fix Advisor**
 
----
+A full-stack security auditing tool that inspects live web applications for missing HTTP security headers and deprecated TLS configurations — and returns **exact, copy-pasteable remediation code** for every finding.
 
-## 🚀 What It Does
-* **Network & Header Auditing:** Automatically inspects live URLs for missing HTTP security headers (CSP, HSTS, X-Frame-Options) and weak TLS configurations.
-* **MERN Stack Code Checks:** Scans backend repositories for common security misconfigurations, including missing Helmet.js middleware, CORS wildcards, missing authentication rate limits, and NoSQL injection vulnerabilities.
-* **Interactive Fix Advisor:** Goes beyond detection by outputting exact, copy-pasteable remediation code snippets for every detected finding.
-* **Security Scoring & Visualization:** Calculates a dynamic security score and visualizes risk severity distribution using interactive charts.
+![StackGuard Dashboard](./screenshots/before1.png)
 
 ---
 
-## 🛠️ Tech Stack
-* **Frontend:** React, Vite, Tailwind CSS, Recharts
-* **Backend:** Node.js, Express.js, Axios, TLS/HTTPS modules
-* **Database:** MongoDB, Mongoose
-* **Utilities:** Simple-Git, Dotenv, Helmet, CORS
+## 📌 What It Does
+
+- **HTTP header auditing** — detects missing Content-Security-Policy, Strict-Transport-Security, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, and Permissions-Policy
+- **Transport security** — flags deprecated TLS 1.0 / 1.1 via Node's `tls` module
+- **Information disclosure** — detects exposed `X-Powered-By` tech stack headers
+- **Fix advisor** — returns ready-to-paste Helmet.js / Next.js remediation code for every finding, with one-click copy
+- **Severity scoring** — calculates a 0–100 security score using OWASP-aligned severity weights
+- **Scan history** — keeps the last 5 audits in-memory for quick comparison
+
+> **Note:** This is a passive scanner. It sends a single `GET` request per target and inspects the response. It does not exploit, brute-force, or send malicious payloads.
 
 ---
 
 ## 📊 Real-World Validation
-StackGuard was validated by auditing a production MERN service-marketplace application (`LankaServe`):
-* **Before Fixes:** 8 security findings (2 Critical, 3 High, 3 Medium) | Security Score: **42/100**
-* **After Remediation:** 2 findings (Low severity) | Security Score: **91/100**
-* **Key Improvements Added:** Enforced CSP headers, restricted CORS to trusted origins, implemented express-rate-limit on auth routes, and secured MongoDB query sanitization.
 
----
+StackGuard was validated against a production Next.js application ([Laser Tech](https://laser-tech-mw.vercel.app)) before and after applying its own recommendations.
 
-## ⚙️ Quick Start
+### Before — 60/100, 4 findings
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/MusfiraMujeeb/stackguard.git](https://github.com/MusfiraMujeeb/stackguard.git)
-   cd stackguard
+![StackGuard scan of Laser Tech showing 60/100 with 4 missing headers](./screenshots/before2.png)
+
+Findings: 1 High (CSP missing), 2 Medium (clickjacking, MIME sniffing), 1 Low (referrer leakage).
+
+### After — 100/100, 0 findings
+
+![StackGuard scan of Laser Tech showing 100/100 with no findings](./screenshots/after.png)
+**Fix applied:** 7 lines added to `next.config.ts` using Next.js's native `headers()` API:
+
+```typescript
+async headers() {
+  return [{
+    source: "/(.*)",
+    headers: [
+      { key: "Content-Security-Policy", value: "default-src 'self'; ..." },
+      { key: "X-Frame-Options", value: "DENY" },
+      { key: "X-Content-Type-Options", value: "nosniff" },
+      { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+      { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+      { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
+    ],
+  }];
+}
+```
+
+Findings & Fixes view
+![StackGuard findings with green remediation code blocks](./screenshots/findings.png)
+Cross-validation
+The same four findings were independently detected on LankaServe, a production MERN marketplace — confirming detection consistency across Express and Next.js stacks.
+
+Third-party validation was also performed against testphp.vulnweb.com (a deliberately vulnerable public target used for security testing), scoring 85/100 with 1 finding.
+
+
+🏗️ Architecture
+
+┌─────────────────┐      POST /api/scan      ┌──────────────────────┐
+│                 │ ──────────────────────► │                      │
+│  React Frontend │                         │  Express API         │
+│  (Vite + TW)    │ ◄──── JSON results ──── │                      │
+│                 │                         │  ┌────────────────┐  │
+└─────────────────┘                         │  │  scanner.js    │  │
+                                            │  │  ├─ checkHeaders│──┼──► axios.get()
+                                            │  │  └─ checkTLS    │──┼──► tls.connect()
+                                            │  └────────────────┘  │
+                                            │  ┌────────────────┐  │
+                                            │  │ fixes (inline)  │  │
+                                            │  │ remediation    │  │
+                                            │  └────────────────┘  │
+                                            └──────────────────────┘
+
+
+Key design decisions:
+
+Passive scanning only — one GET request per target, no exploit payloads. Legal to run against any URL you own.
+
+No database dependency — scan history is held in-memory for zero-config deployment.
+
+Remediation-first design — every finding ships with its fix already attached.
+
+🛠️ Tech Stack
+Frontend
+
+React 19 + Vite
+
+Tailwind CSS v4
+
+Recharts (severity distribution visualization)
+
+Axios
+
+Backend
+
+Node.js + Express 5
+
+Node tls module (raw TLS protocol inspection)
+
+Axios (HTTP header inspection)
+
+Deployment
+
+Frontend: Vercel
+
+Backend: Node runtime (local or any VPS)
