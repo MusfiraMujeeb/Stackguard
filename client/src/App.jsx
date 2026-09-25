@@ -115,7 +115,12 @@ export default function App() {
                   <div key={i} className="bg-gray-900 border border-gray-800 rounded-xl p-5">
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-semibold text-white">{f.description}</span>
-                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full uppercase ${f.severity === 'Critical' ? 'bg-red-950 text-red-400 border border-red-800' : f.severity === 'High' ? 'bg-orange-950 text-orange-400 border border-orange-800' : 'bg-yellow-950 text-yellow-400 border border-yellow-800'}`}>
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full uppercase ${
+  f.severity === 'Critical' ? 'bg-red-950 text-red-400 border border-red-800' :
+  f.severity === 'High' ? 'bg-orange-950 text-orange-400 border border-orange-800' :
+  f.severity === 'Medium' ? 'bg-yellow-950 text-yellow-400 border border-yellow-800' :
+  'bg-blue-950 text-blue-400 border border-blue-800'
+}`}>
                         {f.severity}
                       </span>
                     </div>
